@@ -39,6 +39,7 @@ if( !empty($_POST['btn_submit']) ) {
         /*
          入力されたデータの中に改行コード「\r\n」「\n」「\r」をそれぞれ検索し。表示名については空文字に置き換え改行を削除
         $clean['view_name'] = preg_replace('/\\r\\n|\\n|\\r/', '', $clean['view_name']);
+        (↑↑20に記載あり)
         */
     }
 
@@ -47,8 +48,10 @@ if( !empty($_POST['btn_submit']) ) {
         $error_message[] = 'ひと言メッセージを入力してください。';
     }else {
         $clean['message'] = htmlspecialchars($_POST['message'],ENT_QUOTES);
+
         // 改行コード「\r\n」「\n」「\r」をそれぞれ検索し、メッセージは<br>要素へ置き換え
-        $clean['message'] = preg_replace('/\\r\\n|\\n|\\r/', '<br>', $clean['message']);
+        // $clean['message'] = preg_replace('/\\r\\n|\\n|\\r/', '<br>', $clean['message']);
+        // (↑↑20に記載あり)
     }
 
         if( empty($error_message) ) {
@@ -160,7 +163,7 @@ if( $mysql->connect_errno){
         <!-- 文字列形式になっている時間をstrtotime関数でタイムスタンプ形式に変換,その後、date関数で時刻フォーマット「‘Y年m月d日 H:i’」の形で時刻を取得し、出力 -->
         <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
     </div>
-    <p><?php echo $value['message']; ?></p>
+    <p><?php echo nl2br($value['message']); ?></p>
 </article>
 
 <?php } ?>

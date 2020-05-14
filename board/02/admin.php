@@ -3,7 +3,7 @@
 //管理者ページのログインパスワード  define(定数名, 値 [, 大文字と小文字の区別]);
 define( 'PASSWORD', 'adminPassword' );
 
-//データベースの接続情報
+//データベースの接続情報。定数として宣言
 define( 'DB_HOST', 'localhost');
 define( 'DB_USER', 'root');
 define( 'DB_PASS', '');
@@ -41,12 +41,12 @@ if( !empty($_POST['btn_submit']) ) {
 $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME );
 
 //　接続エラーの確認
-if( $mysql->connect_errno){
+if( $mysql->connect_errno ){
     $error_message[] = 'データの読み込みに失敗しました。エラー番号 '.$mysql->connect_errno.' : '.$mysql->connect_error;
 }else{
     
     //今回は全データを取得するため指定WHERE句は指定しない。ORDER BY句は、特定のカラムの値で取得データを並び替える。降順にデータを取得する「DESC」を指定
-    $sql = "SELECT view_name, message, post_date FROM message ORDER BY post_date DESC";
+    $sql = "SELECT id,view_name,message,post_date FROM message ORDER BY post_date DESC";
     // $sqlを、次のqueryメソッドで実行。返り値はmysqli_resultクラスのオブジェクトが$resに入る
     $res = $mysql->query($sql);
 
@@ -82,6 +82,15 @@ if( $mysql->connect_errno){
 
 <section>
 <?php if( !empty($_SESSION['admin_login']) && $_SESSION['admin_login'] === true ): ?>
+<form method="get" action="./download.php">
+    <!-- 「ダウンロード」ボタンが押されると「limit」と名前のついたselect要素も一緒に「download.php」へPOST送信されるようになる -->
+    <select name="limit">
+        <option value="">全て</option>
+        <option value="10">10件</option>
+        <option value="30">30件</option>
+    </select>
+    <input type="submit" name="btn_download" value="ダウンロード">
+</form>
 <!-- $message_arrayが空じゃないかチェック -->
 <?php if( !empty($message_array) ){ ?>
 <!-- foreach文で$message_arrayからメッセージ1件分のデータを取り出し、$valueに挿入 -->
@@ -92,12 +101,16 @@ if( $mysql->connect_errno){
         <h2><?php echo $value['view_name']; ?></h2>
         <!-- 文字列形式になっている時間をstrtotime関数でタイムスタンプ形式に変換,その後、date関数で時刻フォーマット「‘Y年m月d日 H:i’」の形で時刻を取得し、出力 -->
         <time><?php echo date('Y年m月d日 H:i', strtotime($value['post_date'])); ?></time>
+        <p class="edit_delete_btn">
+            <a href="edit.php?message_id=<?php echo $value['id']; ?>">編集</a>
+            &nbsp;
+            <a href="delete.php?message_id=<?php echo $value['id']; ?>">削除</a>
+        </p>
     </div>
-    <p><?php echo $value['message']; ?></p>
+    <p><?php echo nl2br($value['message']); ?></p>
 </article>
 <?php } ?>
 <?php } ?>
-
 <?php else: ?>
 <form method="post">
     <div>
