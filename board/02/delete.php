@@ -58,42 +58,24 @@ if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
     // $message_idに整数型にサニタイズした値を代入
     $message_id = (int)htmlspecialchars($_POST['message_id'],ENT_QUOTES);
 
-    // empty関数で値が入っているかを確認し、もし未入力だった場合はエラーメッセージを$error_messageに代入
-    if( empty($_POST['view_name']) ) {
-        $error_message[] = '表示名を入力してください。';
-    }else{
-        $message_data['view_name'] = htmlspecialchars($_POST['view_name'],ENT_QUOTES);
-    }
+    // データベースに接続
+    $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-    if( empty($_POST['message']) ) {
-        $error_message[] = 'メッセージを入力してください。';
-    }else{
-        $message_data['message'] = htmlspecialchars($_POST['message'],ENT_QUOTES);
-    }
-
-    // $error_messageにエラーメッセージが入っているかを確認して未入力項目があったかを確認
-    if( empty($error_message) ) {
-        // データベースに接続
-        $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-        //エラーの確認
-        if( $mysql->connect_errno ) {
-            $error_message[] = 'データベースの接続に失敗しました。エラー番号' . $mysql->connect_errno . ':' . $mysql->connect_errno;
-        }else {
-
-            // UPDATE文で更新する「表示名」と「メッセージ」のデータをセット。WHERE句に投稿IDを指定して更新する投稿データを検索する。
-            // SET句はデータを更新したいカラムと値をセットで指定します。更新するカラムが複数ある場合は「, (コンマ)」で区切って指定することができる。
-            $sql = "UPDATE message set view_name = '$message_data[view_name]', message= '$message_data[message]' WHERE id =  $message_id";
+    //　接続エラーの確認
+    if( $mysql->connect_errno ){
+        $error_message[] = 'データベースの読み込みに失敗しました。エラー番号 '.$mysql->connect_errno.' : '.$mysql->connect_error;
+        }else{
+            //データの削除　削除したいデータを特定するために「テーブル名」とWHERE句を指定
+            $sql = "DELETE FROM message WHERE id = $message_id";
+            // 作成したSQLをqueryメソッドに渡して実行
             $res = $mysql->query($sql);
         }
 
         $mysql->close();
 
-        // 更新に成功したら一覧に戻る
         if( $res ) {
             header("Location: ./admin.php");
         }
-    }
 }
 
 ?>
@@ -102,11 +84,11 @@ if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>ひと言掲示板 管理ページ(投稿の編集)</title>
+<title>ひと言掲示板 管理ページ(投稿の削除)</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<h1>ひと言掲示板 管理ページ(投稿の編集)</h1>
+<h1>ひと言掲示板 管理ページ(投稿の削除)</h1>
 
 <!-- 変数$error_messageは配列形式になっているため、foreach文を使って配列の値の数だけメッセージを表示するようにする -->
 <?php if( !empty($error_message) ): ?>
@@ -117,19 +99,20 @@ if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
         <?php endforeach; ?>
 	</ul>
 <?php endif; ?>
-
+<p class="text-confirm">以下の投稿を削除します。<br>よろしければ「削除」ボタンを押してください。</p>
 <form method="post">
 	<div>
         <!-- for属性は、ラベル付け対象のフォームid属性値を指定 -->
-		<label for="view_name">表示名</label>
-		<input id="view_name" type="text" name="view_name" value="<?php if( !empty($message_data['view_name']) ) { echo $message_data['view_name']; }  ?>">
+        <label for="view_name">表示名</label>
+        <!-- disabled属性はフォームを入力できないようにするための属性で、今回のように内容を確認することが目的になる場合に使用 -->
+		<input id="view_name" type="text" name="view_name" value="<?php if( !empty($message_data['view_name']) ) { echo $message_data['view_name']; }  ?>"　disabled>
 	</div>
 	<div>
 		<label for="message">ひと言メッセージ</label>
-		<textarea id="message" name="message"><?php if( !empty($message_data['message']) ) { echo $message_data['message']; } ?></textarea>
+		<textarea id="message" name="message" disabled><?php if( !empty($message_data['message']) ) { echo $message_data['message']; } ?></textarea>
     </div>
     <a class="btn_cancel" href="admin.php">キャンセル</a>
-    <input type="submit" name="btn_submit" value="更新">
+    <input type="submit" name="btn_submit" value="削除">
     <input type="hidden" name="message_id" value="<?php echo $message_data['id']; ?>">
 </form>
 

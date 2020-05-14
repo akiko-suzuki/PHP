@@ -26,6 +26,12 @@ $clean = array();
 // 掲示板で入力された「表示名」を保存し、掲示板によく書き込みを行う方の入力を少なく
 session_start();
 
+// empty関数でGETパラメータ「btn_logout」が渡されているかを確認
+if( !empty($_GET['btn_logout']) ) {
+    // 「btn_logout」が渡されているかを判断したら、ここでunset関数を実行
+    unset($_SESSION['admin_login']);
+}
+
 if( !empty($_POST['btn_submit']) ) {
 
     //パスワードの未入力チェックと正しいパスワードが入力されているかを確認
@@ -111,6 +117,9 @@ if( $mysql->connect_errno ){
 </article>
 <?php } ?>
 <?php } ?>
+<form method="get" action="">
+    <input type="submit" name="btn_logout" value="ログアウト">
+</form>
 <?php else: ?>
 <form method="post">
     <div>

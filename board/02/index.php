@@ -14,9 +14,7 @@ $now_date = null;
 $data = null;
 $file_handle = null;
 $split_data = null;
-$message = array();
 $message_array = array();
-$success_message = null;
 $error_message = array();//「表示名」と「ひと言メッセージ」の2つ以上入る可能性があるため、配列形式
 $clean = array();
 
@@ -58,6 +56,8 @@ if( !empty($_POST['btn_submit']) ) {
 
         //データベースに接続
         $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME );
+
+        //　接続エラーの確認
         if( $mysql->connect_errno){
             $error_message[] = '書き込みに失敗しました。エラー番号 '.$mysql->connect_errno.' : '.$mysql->connect_error;
         }else{
@@ -74,15 +74,18 @@ if( !empty($_POST['btn_submit']) ) {
             // データを登録
             $res = $mysql->query($sql);
             
-            if( $res ){
-                $success_message = 'メッセージを書き込みました。';
-            }else{
-                $error_message = '書き込みに失敗しました。';
-            }
+            if( $res ) {
+				$_SESSION['success_message'] = 'メッセージを書き込みました。';
+			}else{
+				$error_message[] = '書き込みに失敗しました。';
+			}
 
             //データべース切断
             $mysql->close();
         }
+
+        // 「Location:」の後ろにリンクを指定します。今回は自分自身を呼び出すため、「./」
+        header('Location: ./');
     }		
 }
 
@@ -119,10 +122,11 @@ if( $mysql->connect_errno){
 </head>
 <body>
 <h1>ひと言掲示板</h1>
-
-<!-- empty関数で$success_messageに値が入っているかを確認し入っていればecho-->
-<?php if( !empty($success_message) ): ?>
-    <p class="success_message"><?php echo $success_message; ?></p> 
+<!-- empty関数でPOSTパラメータの「書き込む」ボタンが押されていないか、$success_messageに表示する成功メッセージのセッションがあるかを確認し入っていればechoでセッションに入っているメッセージを出力-->
+<!-- unset関数で1度表示したメッセージをセッションから削除するために実行 -->
+<?php if( empty($_POST['btn_submit']) && !empty($_SESSION['success_message']) ): ?>
+    <p class="success_message"><?php echo $_SESSION['success_message']; ?></p>
+    <?php unset($_SESSION['success_message']); ?>
 <?php endif; ?>
 
 <!-- 変数$error_messageは配列形式になっているため、foreach文を使って配列の値の数だけメッセージを表示するようにする -->

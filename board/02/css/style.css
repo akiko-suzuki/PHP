@@ -178,6 +178,13 @@ input[type=submit]:hover,
 button:hover {
     background-color: #2392d8;
 }
+input[name=btn_logout] {
+	margin-top: 40px;
+	background-color: #666;
+}
+input[name=btn_logout]:hover {
+	background-color: #777;
+}
 
 hr {
 	margin: 20px 0;
@@ -221,6 +228,12 @@ hr {
 	border-color: #999;
 	text-decoration: none;
 }
+.text-confirm {
+	margin-bottom: 20px;
+	font-size: 86%;
+	line-height: 1.6em;
+}
+
 /*-----------------------------------
 掲示板エリア
 -----------------------------------*/
