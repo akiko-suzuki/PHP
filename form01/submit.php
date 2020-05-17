@@ -23,46 +23,46 @@ $message = $_SESSION['message'];
 <p class="to-top"><a href="input.php">フォームTop</a></p>
 
 <?php 
-    // メール本文の文字コード設定.mb=メールを送る際の設定
-    mb_language("Japanese");
-    mb_internal_encoding("UTF-8");
+// メール本文の文字コード設定.mb=メールを送る際の設定
+mb_language("Japanese");
+mb_internal_encoding("UTF-8");
 
-    $to = "{$email}";//入力されて変数に代入された$emilを＄toに代入。メールの宛先
-    $title = "【お問い合わせメールフォームより】";//件名【】は有っても無くてもok
+$to = "{$email}";//入力されて変数に代入された$emilを＄toに代入。メールの宛先
+$title = "【お問い合わせメールフォームより】";//件名【】は有っても無くてもok
 
-    //差出人の設定
-    $headers = "From:".mb_encode_mimeheader("株式会社〇〇〇〇〇");//差出人、会社名
-    $headers.="\n";
-    $headers.="Bcc: xxxxx@email";//管理者のメールにBCCで送信
+//差出人の設定
+$headers = "From:".mb_encode_mimeheader("株式会社〇〇〇〇〇");//差出人、会社名
+$headers.="\n";
+$headers.="Bcc: xxxxx@email";//管理者のメールにBCCで送信
 
-    //EMO内がメールの中身として送られる。-----も含まれる。
-    $body =  <<<EOM
-        ------------------------------------------------------
-        【お問い合せ内容の確認】
+//EMO内がメールの中身として送られる。-----も含まれる。
+$body =  <<<EOM
+    ------------------------------------------------------
+    【お問い合せ内容の確認】
 
-        お名前：{$name}
-        メールアドレス：{$email}
-        お問い合わせ内容：{$message}
+    お名前：{$name}
+    メールアドレス：{$email}
+    お問い合わせ内容：{$message}
 
 
-        {$name}様、お問い合わせ、誠にありがとうございました。
-        後ほど、担当の者よりご連絡いたしますので、お待ちください。
+    {$name}様、お問い合わせ、誠にありがとうございました。
+     後ほど、担当の者よりご連絡いたしますので、お待ちください。
 
-        -------------------------------------------------------
-    EOM;
+    -------------------------------------------------------
+EOM;
 
-    // メール送信の実行
-    //mb_send_mailでメールを送る事が出来る
-    $rc = mb_send_mail($to, $title, $body, $headers);
+// メール送信の実行
+//mb_send_mailでメールを送る事が出来る
+$rc = mb_send_mail($to, $title, $body, $headers);
 
-    if (!$rc) {
-        //$rcがひとつでもなかったら送らない
-        exit;
-    } else {
-        $_SESSION = NULL;
-    }
-    //最後にセッション情報を破棄
-    session_destroy();
+if (!$rc) {
+    //$rcがひとつでもなかったら送らない
+     exit;
+} else {
+    $_SESSION = NULL;
+}
+//最後にセッション情報を破棄
+session_destroy();
 
 ?>
 
