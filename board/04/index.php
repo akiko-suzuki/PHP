@@ -31,24 +31,26 @@ if( !empty($_POST['btn_submit']) ) {
         $clean['message'] = htmlspecialchars($_POST['message'],ENT_QUOTES);
     }
 
-        if( empty($error_message) ) {
-        $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME );
-        if( $mysql->connect_errno){
-            $error_message[] = '書き込みに失敗しました。エラー番号 '.$mysql->connect_errno.' : '.$mysql->connect_error;
-        }else{
-            $mysql->set_charset('utf8');
+    if( empty($error_message) ) {
+        try {        
+            $dbh=new PDO($dsn,$user,$password);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
             $now_date = date("Y-m-d H:i:s");
             $sql = "INSERT INTO message (view_name, message, post_date) VALUES ( '$clean[view_name]', '$clean[message]', '$now_date')";
-            $res = $mysql->query($sql);
-            if( $res ) {
-				$_SESSION['success_message'] = 'メッセージを書き込みました。';
-			}else{
-				$error_message[] = '書き込みに失敗しました。';
-			}
-            $mysql->close();
+            $stmt=$dbh->prepare($sql);
+            $stmt->execute();
+            if( $stmt ) {
+                $_SESSION['success_message'] = 'メッセージを書き込みました。';
+            }else {
+                $error_message[] = '書き込みに失敗しました。';
+            }
+            $dbh=null;
+        }catch (Exception $e) {
+        $error_message[] = '書き込みに失敗しました。エラー：'.$e->getMessage();
         }
-        header('Location: ./');
-    }		
+        header('Location: ./');	
+    }
+    
 }
 
 try {
@@ -64,6 +66,7 @@ try {
     $error_message[] = 'データの読み込みに失敗しました。エラー：'.$e->getMessage();
 }
 $dbh=null;//ここの位置でいいのかしら
+
 ?>
 
 <!DOCTYPE html>
