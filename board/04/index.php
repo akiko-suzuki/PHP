@@ -51,7 +51,6 @@ if( !empty($_POST['btn_submit']) ) {
     }		
 }
 
-
 try {
     $dbh=new PDO($dsn,$user,$password);
     $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
@@ -61,28 +60,12 @@ try {
     if( $stmt ){
         $message_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    $dbh=null;
-
 }catch (Exception $e) {
-    exit($error_message[] = 'データベースに接続できませんでした。' . $e->getMessage());
+    $error_message[] = 'データの読み込みに失敗しました。エラー：'.$e->getMessage();
 }
-
-
-
-
-// $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME );
-
-// if( $mysql->connect_errno){
-//     $error_message[] = 'データの読み込みに失敗しました。エラー番号 '.$mysql->connect_errno.' : '.$mysql->connect_error;
-// }else{
-//     $sql = "SELECT view_name, message, post_date FROM message ORDER BY post_date DESC";
-//     $res = $mysql->query($sql);
-//     if( $res ){
-//         $message_array = $res->fetch_all(MYSQLI_ASSOC);
-//     }
-//     $mysql->close();
-// }
+$dbh=null;//ここの位置でいいのかしら
 ?>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
