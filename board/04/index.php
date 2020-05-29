@@ -46,7 +46,7 @@ if( !empty($_POST['btn_submit']) ) {
             }
             $dbh=null;
         }catch (Exception $e) {
-        $error_message[] = '書き込みに失敗しました。エラー：'.$e->getMessage();
+            $error_message[] = '書き込みに失敗しました。エラー：'.$e->getMessage();
         }
         header('Location: ./');	
     }

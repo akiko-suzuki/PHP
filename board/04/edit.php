@@ -1,10 +1,9 @@
 <?php
 //////// 運営者しかアクセスできないページ ////////
 
-define( 'DB_HOST', 'localhost');
-define( 'DB_USER', 'root');
-define( 'DB_PASS', '');
-define( 'DB_NAME', 'board');
+$dsn='mysql:dbname=board;host=localhost;charset=utf8';
+$user='root';
+$password='';
 
 date_default_timezone_set('Asia/Tokyo');
 
@@ -22,24 +21,21 @@ if( empty($_SESSION['admin_login']) || $_SESSION['admin_login'] !== true ) {
 }
 
 if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
-    $message_id = (int)htmlspecialchars($_GET['message_id'], ENT_QUOTES);
-    $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-    if( $mysql->connect_errno ){
-    $error_message[] = 'データベースの読み込みに失敗しました。エラー番号 '.$mysql->connect_errno.' : '.$mysql->connect_error;
-    }else{
+    try {
+        $message_id = (int)htmlspecialchars($_GET['message_id'], ENT_QUOTES);
+        $dbh=new PDO($dsn,$user,$password);
+        $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
         $sql = "SELECT * FROM message WHERE id = $message_id";
-        $res = $mysql->query($sql);
-
-        if( $res ) {
-            $message_data = $res->fetch_assoc();
-        }else{
-            header("Location: ./admin.php");
+        $stmt=$dbh->prepare($sql);
+        $stmt->execute();
+        if( $stmt ) {
+            $message_data = $stmt->fetch(PDO::FETCH_ASSOC);
         }
-
-        $mysql->close();
-    }
-
+        $dbh=null;
+        }catch ( Exception $e ) {
+            $error_message[] = 'データベースの読み込みに失敗しました。エラー：'.$e->getMessage();
+        }
+         
 }elseif( !empty($_POST['message_id']) ) {
     $message_id = (int)htmlspecialchars($_POST['message_id'],ENT_QUOTES);
 
@@ -56,21 +52,21 @@ if( !empty($_GET['message_id']) && empty($_POST['message_id']) ) {
     }
 
     if( empty($error_message) ) {
-        $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME);
-
-        if( $mysql->connect_errno ) {
-            $error_message[] = 'データベースの接続に失敗しました。エラー番号' . $mysql->connect_errno . ':' . $mysql->connect_errno;
-        }else {
+        try {
+            $dbh=new PDO($dsn,$user,$password);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
             $sql = "UPDATE message set view_name = '$message_data[view_name]', message= '$message_data[message]' WHERE id =  $message_id";
-            $res = $mysql->query($sql);
-        }
-
-        $mysql->close();
-
-        if( $res ) {
+            $stmt=$dbh->prepare($sql);
+            $stmt->execute();
+            $dbh=null;
+        if( $stmt ) {
             header("Location: ./admin.php");
         }
+        }catch (Exception $e) {
+            $error_message[] = '書き込みに失敗しました。エラー：'.$e->getMessage();
+        }
     }
+
 }
 
 ?>

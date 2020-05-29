@@ -2,10 +2,9 @@
 
 define( 'PASSWORD', 'adminPassword' );
 
-define( 'DB_HOST', 'localhost');
-define( 'DB_USER', 'root');
-define( 'DB_PASS', '');
-define( 'DB_NAME', 'board');
+$dsn='mysql:dbname=board;host=localhost;charset=utf8';
+$user='root';
+$password='';
 
 date_default_timezone_set('Asia/Tokyo');
 
@@ -34,21 +33,22 @@ if( !empty($_POST['btn_submit']) ) {
     }
 }
 
-$mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME );
-
-if( $mysql->connect_errno ){
-    $error_message[] = 'データの読み込みに失敗しました。エラー番号 '.$mysql->connect_errno.' : '.$mysql->connect_error;
-}else{
+try {
+    $dbh=new PDO($dsn,$user,$password);
+    $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
     $sql = "SELECT id,view_name,message,post_date FROM message ORDER BY post_date DESC";
-    $res = $mysql->query($sql);
-
-    if( $res ){
-        $message_array = $res->fetch_all(MYSQLI_ASSOC);
+    $stmt=$dbh->prepare($sql);
+    $stmt->execute();
+    if( $stmt ){
+        $message_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    $mysql->close();
+}catch (Exception $e){
+    $error_message[] = 'データの読み込みに失敗しました。エラー：'.$e->getMessage();
 }
+$dbh=null;//ここの位置でいいのかしら
 
 ?>
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
