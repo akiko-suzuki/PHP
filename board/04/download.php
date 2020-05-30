@@ -1,10 +1,9 @@
 <?php
 //////// 運営者しかアクセスできないページ ////////
 
-define( 'DB_HOST', 'localhost');
-define( 'DB_USER', 'root');
-define( 'DB_PASS', '');
-define( 'DB_NAME', 'board');
+$dsn='mysql:dbname=board;host=localhost;charset=utf8';
+$user='root';
+$password='';
 
 $csv_data = null;
 $sql = null;
@@ -22,28 +21,28 @@ if( !empty($_GET['limit']) ) {
     }
 }
 
-if( !empty($_SESSION['admin_login']) && $_SESSION['admin_login'] === true ) {
-    header("Content-Type: application/octet-stream");
-    header("Content-Disposition: attachment; filename=メッセージデータ.csv");
-    header("Content-Transfer-Encoding: binary");
+try {
+    if( !empty($_SESSION['admin_login']) && $_SESSION['admin_login'] === true ) {
+        header("Content-Type: application/octet-stream");
+        header("Content-Disposition: attachment; filename=メッセージデータ.csv");
+        header("Content-Transfer-Encoding: binary");
 
-    $mysql = new mysqli( DB_HOST, DB_USER, DB_PASS, DB_NAME );
-
-    if( !$mysql->connect_errno ) {
-
+        $dbh=new PDO($dsn,$user,$password);
+        $dbh->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
         if( !empty($limit) ) {
             $sql = "SELECT * FROM message ORDER BY post_date ASC LIMIT $limit";
         } else {
             $sql = "SELECT * FROM message ORDER BY post_date ASC";
         }
+        $stmt=$dbh->prepare($sql);
+        $stmt->execute();
 
-        $res = $mysql->query($sql);
-
-        if( $res ) {
-            $message_array = $res->fetch_all(MYSQLI_ASSOC);
+        if( $stmt ){
+        $message_array = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        $mysql->close();
+        $dbh=null;
+
     }
 
     if( !empty($message_array) ) {
@@ -55,10 +54,11 @@ if( !empty($_SESSION['admin_login']) && $_SESSION['admin_login'] === true ) {
 
         echo $csv_data;
     }
-}else{
+
+}catch ( Exception $e ) {
     header("Location: ./admin.php");
 }
 
-return;
+return;//どこにリターンするんだろう
 
 ?>
