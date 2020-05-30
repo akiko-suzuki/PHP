@@ -1,6 +1,6 @@
 <?php
 
-define( 'PASSWORD', 'adminPassword' );
+define( 'PASSWORD', 'Password' );
 
 $dsn='mysql:dbname=board;host=localhost;charset=utf8';
 $user='root';
@@ -68,14 +68,19 @@ $dbh=null;//ここの位置でいいのかしら
 
 <section>
 <?php if( !empty($_SESSION['admin_login']) && $_SESSION['admin_login'] === true ): ?>
-<form method="get" action="./download.php">
-    <select name="limit">
-        <option value="">全て</option>
-        <option value="10">10件</option>
-        <option value="30">30件</option>
-    </select>
-    <input type="submit" name="btn_download" value="ダウンロード">
-</form>
+<div class="flex">
+    <form method="get" action="./download.php">
+        <select name="limit">
+            <option value="">全て</option>
+            <option value="10">10件</option>
+            <option value="30">30件</option>
+        </select>
+        <input type="submit" name="btn_download" value="ダウンロード" style="background: #00b872;">
+    </form>
+    <form method="get" action="">
+        <input type="submit" name="btn_logout" value="ログアウト">
+    </form>
+</div>
 <?php if( !empty($message_array) ){ ?>
 <?php foreach( $message_array as $value ){ ?>
 <article>
@@ -92,16 +97,14 @@ $dbh=null;//ここの位置でいいのかしら
 </article>
 <?php } ?>
 <?php } ?>
-<form method="get" action="">
-    <input type="submit" name="btn_logout" value="ログアウト">
-</form>
 <?php else: ?>
 <form method="post">
     <div>
         <label for="admin_password">ログインパスワード</label>
         <input type="password" name="admin_password" id="admin_password" value="">
     </div>
-    <input type="submit" name="btn_submit" value="ログイン">
+    <input type="submit" name="btn_submit" value="ログイン" style="background: #00b872;">
+    <div class="to_top"><a href="index.php">ひとこと掲示板 top へ</a></div>
 </form>
 <?php endif; ?>
 </section>

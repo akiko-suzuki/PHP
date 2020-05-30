@@ -108,7 +108,7 @@ body {
 }
 
 a {
-    color: #007edf;
+    color: #00b872;
     text-decoration: none;
 }
 
@@ -131,6 +131,10 @@ h1 {
     text-align: center;
 }
 
+.flex {
+    display: flex;
+    justify-content: space-between;
+}
 
 /*-----------------------------------
 入力エリア
@@ -179,7 +183,6 @@ button:hover {
     background-color: #2392d8;
 }
 input[name=btn_logout] {
-	margin-top: 40px;
 	background-color: #666;
 }
 input[name=btn_logout]:hover {
@@ -260,34 +263,57 @@ article.reply::before {
     border-right: 7px solid #f7f7f7;
     border-bottom: 10px solid #fff;
 }
-	.info {
-		margin-bottom: 10px;
-	}
-	.info h2 {
-		display: inline-block;
-		margin-right: 10px;
-		color: #222;
-		line-height: 1.6em;
-		font-size: 86%;
-	}
-	.info time {
-		color: #999;
-		line-height: 1.6em;
-		font-size: 72%;
-    }
-    .info p {
-		display: inline-block;
-		line-height: 1.6em;
-		font-size: 86%;
-    }
-    .edit_delete_btn {
-        margin-left: 20px;
-    }
-    article p {
-        color: #555;
-        font-size: 86%;
-        line-height: 1.6em;
-    }
+.info {
+	margin-bottom: 10px;
+}
+.info h2 {
+	display: inline-block;
+	margin-right: 10px;
+	color: #222;
+	line-height: 1.6em;
+	font-size: 86%;
+}
+.info time {
+	color: #999;
+	line-height: 1.6em;
+	font-size: 72%;
+}
+.info p {
+	display: inline-block;
+	line-height: 1.6em;
+	font-size: 86%;
+}
+.edit_delete_btn {
+    margin-left: 20px;
+}
+article p {
+    color: #555;
+    font-size: 86%;
+    line-height: 1.6em;
+}
+.to_top,.to_admin {
+    display: table;
+    padding: 10px 20px;
+    color: #fff;
+    font-size: 86%;
+    line-height: 1.0em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    
+}
+.to_top a,.to_admin a {
+    color: #fff;
+}
+.to_top {
+    margin-top: 60px;
+    background-color: #37a1e5;
+}
+
+.to_admin {
+    background-color: #00b872;
+}
+
 
 @media only screen and (max-width: 1000px) {
 

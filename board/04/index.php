@@ -99,8 +99,11 @@ $dbh=null;//ここの位置でいいのかしら
 	<div>
 		<label for="message">ひと言メッセージ</label>
 		<textarea id="message" name="message"></textarea>
-	</div>
-	<input type="submit" name="btn_submit" value="書き込む">
+    </div>
+    <div class="flex">
+        <input type="submit" name="btn_submit" value="書き込む">
+        <div class="to_admin"><a href="admin.php">管理画面へ</a></div>
+    </div>
 </form>
 
 <hr>
