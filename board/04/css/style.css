@@ -197,9 +197,9 @@ hr {
 .success_message {
     margin-bottom: 20px;
     padding: 10px;
-    color: #48b400;
+    color: #37a1e5;
     border-radius: 10px;
-    border: 1px solid #4dc100;
+    border: 1px solid #37a1e5;
 }
 
 .error_message {
